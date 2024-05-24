@@ -1,0 +1,188 @@
+openapi: 3.0.0
+info:
+  title: Retention Policy API
+  version: 1.0.0
+paths:
+  /retention_policies:
+    post:
+      summary: Create a new retention policy
+      operationId: createRetentionPolicy
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RetentionPolicyCreate'
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: integer
+                example: 123 # Replace with the actual ID returned
+        '400':
+          description: Bad Request
+        '500':
+          description: Internal Server Error
+    get:
+      summary: Get all retention policies
+      operationId: getRetentionPolicies
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RetentionPolicy'
+        '500':
+          description: Internal Server Error
+  /retention_policies/{id}:
+    get:
+      summary: Get a specific retention policy by ID
+      operationId: getRetentionPolicyById
+      parameters:
+        - $ref: '#/components/parameters/RetentionPolicyId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetentionPolicy'
+        '404':
+          description: Retention Policy Not Found
+        '500':
+          description: Internal Server Error
+    put:
+      summary: Update a retention policy
+      operationId: updateRetentionPolicyById
+      parameters:
+        - $ref: '#/components/parameters/RetentionPolicyId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RetentionPolicyUpdate'
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: integer
+                example: 123 # Replace with the actual ID returned
+        '400':
+          description: Bad Request
+        '404':
+          description: Retention Policy Not Found
+        '500':
+          description: Internal Server Error
+    delete:
+      summary: Delete a retention policy
+      operationId: deleteRetentionPolicyById
+      parameters:
+        - $ref: '#/components/parameters/RetentionPolicyId'
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Retention Policy Not Found
+        '500':
+          description: Internal Server Error
+  /retention_policies/byTenant/{tenant}:
+    parameters:
+      - name: tenant
+        in: path
+        description: Tenant for whom the policies are applicable
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Get retention policies for a specific tenant
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RetentionPolicy'
+components:
+  schemas:
+    RetentionPolicy:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID of the retention policy.
+        retention_model_id:
+          type: integer
+          description: ID of the associated retention model.
+        retention_period:
+          type: integer
+          description: Retention period in days.
+        action:
+          type: string
+          description: Action to be taken on expiration. Allowed values are DELETE or ANONYMIZE.
+        tenant:
+          type: string
+          description: Tenant for whom the policy is applicable.
+        created_by:
+          type: string
+          description: The user who created the retention policy
+        created_at:
+          type: string
+          description: The timestamp when the retention policy was created
+        deleted_by:
+          type: string
+          description: The user who deleted the retention policy
+        deleted_at:
+          type: string
+          description: The timestamp when the retention policy was deleted
+        updated_to_id:
+          type: integer
+          description: The ID of the updated retention policy
+    RetentionPolicyCreate:
+      type: object
+      properties:
+        retention_model_id:
+          type: integer
+          description: ID of the retention model associated with the policy.
+        retention_period:
+          type: integer
+          description: Retention period in days. If not provided, it's inherited from the associated retention model.
+        action:
+          type: string
+          description: Action to be taken on expiration. Allowed values are DELETE or ANONYMIZE.
+        tenant:
+          type: string
+          description: Tenant for whom the policy is applicable.
+      required:
+        - retention_model_id
+        - action
+        - tenant
+    RetentionPolicyUpdate:
+      type: object
+      properties:
+        retention_model_id:
+          type: integer
+          description: ID of the new retention model associated with the policy.
+        retention_period:
+          type: integer
+          description: New retention period in days. If provided along with retention model, it takes priority over the retention model's period.
+        action:
+          type: string
+          description: Action to be taken on expiration. Allowed values are DELETE or ANONYMIZE.
+  parameters:
+    RetentionPolicyId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: Numeric ID of the retention policy to retrieve

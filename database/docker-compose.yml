@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  h2-database:
+    build: .
+    container_name: h2-database
+    ports:
+      - "8082:8082"  # For accessing the H2 web console
+      - "9092:9092"  # For allowing external applications to connect via TCP
+    volumes:
+      - h2-data:/opt/h2-data
+      - ./schema.sql:/opt/schema.sql
+
+volumes:
+  h2-data:
+    driver: local

@@ -1,0 +1,196 @@
+openapi: 3.0.0
+info:
+  title: Data Retention Model API
+  version: 1.0.0
+paths:
+  /retention-models:
+    post:
+      summary: Create a new retention model
+      operationId: createRetentionModel
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RetentionModelCreate'
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: integer
+                example: 123 # Replace with the actual ID returned
+        '400':
+          description: Bad Request
+        '500':
+          description: Internal Server Error
+
+    get:
+      summary: Get a list of retention models
+      operationId: getRetentionModels
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RetentionModel'
+        '500':
+          description: Internal Server Error
+
+  /retention-models/{id}:
+    get:
+      summary: Get a retention model by ID
+      operationId: getRetentionModelById
+      parameters:
+        - $ref: '#/components/parameters/RetentionModelId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetentionModel'
+        '404':
+          description: Retention Model Not Found
+        '500':
+          description: Internal Server Error
+
+    put:
+      summary: Update a retention model by ID
+      operationId: updateRetentionModelById
+      description: Endpoint to update a retention model by its ID.
+      parameters:
+        - $ref: '#/components/parameters/RetentionModelId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RetentionModelUpdate'
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: integer
+                example: 123 # Replace with the actual ID returned
+        '400':
+          description: Bad Request
+        '404':
+          description: Retention Model Not Found
+        '500':
+          description: Internal Server Error
+
+    delete:
+      summary: Delete a retention model by ID
+      operationId: deleteRetentionModelById
+      description: Endpoint to delete a retention model by its ID.
+      parameters:
+        - $ref: '#/components/parameters/RetentionModelId'
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Retention Model Not Found
+        '500':
+          description: Internal Server Error
+
+components:
+  schemas:
+    RetentionModel:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier for the retention model
+        name:
+          type: string
+          description: The name of the retention model
+        ownership:
+          type: string
+          description: The ownership of the retention model
+        description:
+          type: string
+          description: The description of the retention model
+        retention_period:
+          type: integer
+          minimum: 0
+          description: The retention period in days (must be a non-negative integer)
+        sensitive_fields:
+          type: string
+          description: The sensitive fields of the retention model
+        created_by:
+          type: string
+          description: The user who created the retention model
+        created_at:
+          type: string
+          description: The timestamp when the retention model was created
+        deleted_by:
+          type: string
+          description: The user who deleted the retention model
+        deleted_at:
+          type: string
+          description: The timestamp when the retention model was deleted
+        updated_to_id:
+          type: integer
+          description: The ID of the updated retention model
+
+    RetentionModelCreate:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the retention model
+        ownership:
+          type: string
+          description: The ownership of the retention model
+        description:
+          type: string
+          description: The description of the retention model
+        retention_period:
+          type: integer
+          minimum: 0
+          description: The retention period in days (must be a non-negative integer)
+        sensitive_fields:
+          type: string
+          description: The sensitive fields of the retention model
+      required:
+        - name
+        - ownership
+        - description
+        - retention_period
+        - sensitive_fields
+
+    RetentionModelUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the retention model
+        ownership:
+          type: string
+          description: The ownership of the retention model
+        description:
+          type: string
+          description: The description of the retention model
+        retention_period:
+          type: integer
+          minimum: 0
+          description: The retention period in days (must be a non-negative integer)
+        sensitive_fields:
+          type: string
+          description: The sensitive fields of the retention model
+
+  parameters:
+    RetentionModelId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: Numeric ID of the retention model to retrieve
